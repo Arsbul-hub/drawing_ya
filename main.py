@@ -12,8 +12,8 @@ class MyWidget(QMainWindow):
         super().__init__()
         uic.loadUi('UI.ui', self)
         self.draw_btn.clicked.connect(self.paint)
-
         self.do_paint = False
+
     def paint(self):
         self.do_paint = True
         self.repaint()
@@ -24,10 +24,12 @@ class MyWidget(QMainWindow):
 
             qp.begin(self)
 
-            qp.setPen(Qt.yellow)
-            qp.setBrush(Qt.yellow)
             for i in range(30):
                 radius = random.randint(10, 70)
+                r, g, b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+                qp.setPen(QColor(r, g, b))
+                qp.setBrush(QColor(r, g, b))
+
                 qp.drawEllipse(random.randint(0, self.width()),
                                random.randint(self.draw_btn.y() + self.draw_btn.height(), self.height()), radius, radius)
 
