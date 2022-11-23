@@ -15,11 +15,9 @@ class DBSample(QMainWindow):
         self.tableWidget.verticalHeader().setVisible(False)
 
     def select_data(self):
-
         q = self.connection.cursor().execute("SELECT * FROM data")
         res = q.fetchall()
         self.tableWidget.setColumnCount(7)
-
         names = list(map(lambda x: x[0], q.description))
         self.tableWidget.setHorizontalHeaderLabels(names)
         for i, row in enumerate(res):
