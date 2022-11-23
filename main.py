@@ -1,48 +1,43 @@
-import random
+import sqlite3
 import sys
 
-from PyQt5 import uic  # Импортируем uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtGui import QPainter, QBrush, QPen, QColor
-from PyQt5.QtCore import Qt
+from PyQt5 import uic
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 
 
-class MyWidget(QMainWindow):
+class DBSample(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('UI.ui', self)
-        self.draw_btn.clicked.connect(self.paint)
-        self.do_paint = False
+        uic.loadUi('main.ui', self)
+        self.connection = sqlite3.connect("coffee.db")
 
-    def paint(self):
-        self.do_paint = True
-        self.repaint()
+        self.select_data()
+        self.tableWidget.verticalHeader().setVisible(False)
 
-    def paintEvent(self, event):
-        if self.do_paint:
-            qp = QPainter()
+    def select_data(self):
 
-            qp.begin(self)
+        q = self.connection.cursor().execute("SELECT * FROM data")
+        res = q.fetchall()
+        self.tableWidget.setColumnCount(7)
 
-            for i in range(30):
-                radius = random.randint(10, 70)
-                r, g, b = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                qp.setPen(QColor(r, g, b))
-                qp.setBrush(QColor(r, g, b))
+        names = list(map(lambda x: x[0], q.description))
+        self.tableWidget.setHorizontalHeaderLabels(names)
+        for i, row in enumerate(res):
+            self.tableWidget.setRowCount(
+                self.tableWidget.rowCount() + 1)
+            for j, elem in enumerate(row):
+                self.tableWidget.setItem(
+                    i, j, QTableWidgetItem(str(elem)))
 
-                qp.drawEllipse(random.randint(0, self.width()),
-                               random.randint(self.draw_btn.y() + self.draw_btn.height(), self.height()), radius, radius)
-
-            qp.end()
-
-
-def except_hook(cls, exception, traceback):
-    sys.__excepthook__(cls, exception, traceback)
+    def closeEvent(self, event):
+        # При закрытии формы закроем и наше соединение
+        # с базой данных
+        self.connection.close()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = MyWidget()
-    sys.excepthook = except_hook
+    ex = DBSample()
     ex.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
