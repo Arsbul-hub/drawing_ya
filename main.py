@@ -11,7 +11,6 @@ class DBSample(QMainWindow):
         super().__init__()
         uic.loadUi('main.ui', self)
         self.connection = sqlite3.connect("coffee.db")
-
         self.select_data()
         self.tableWidget.verticalHeader().setVisible(False)
 
@@ -31,8 +30,6 @@ class DBSample(QMainWindow):
                     i, j, QTableWidgetItem(str(elem)))
 
     def closeEvent(self, event):
-        # При закрытии формы закроем и наше соединение
-        # с базой данных
         self.connection.close()
 
 
