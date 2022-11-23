@@ -11,20 +11,27 @@ class MyWidget(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('UI.ui', self)
-        self.draw_btn.clicked.connect(self.repaint)
+        self.draw_btn.clicked.connect(self.paint)
+
+        self.do_paint = False
+    def paint(self):
+        self.do_paint = True
+        self.repaint()
 
     def paintEvent(self, event):
-        qp = QPainter()
+        if self.do_paint:
+            qp = QPainter()
 
-        qp.begin(self)
-        qp.setPen(QPen(Qt.yellow))
-        qp.setBrush(Qt.yellow)
-        for i in range(30):
-            radius = random.randint(10, 70)
-            qp.drawEllipse(random.randint(0, self.width()),
-                           random.randint(self.draw_btn.y() + self.draw_btn.height(), self.height()), radius, radius)
+            qp.begin(self)
 
-        qp.end()
+            qp.setPen(Qt.yellow)
+            qp.setBrush(Qt.yellow)
+            for i in range(30):
+                radius = random.randint(10, 70)
+                qp.drawEllipse(random.randint(0, self.width()),
+                               random.randint(self.draw_btn.y() + self.draw_btn.height(), self.height()), radius, radius)
+
+            qp.end()
 
 
 def except_hook(cls, exception, traceback):
